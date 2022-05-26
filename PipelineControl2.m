@@ -430,8 +430,8 @@ populate(slwest382_codechallenge.NeuronComputations)
 % query_result needs to be a single value to properly plot the STA. 
 attribute = 'sta'; 
 restrictions = {'subject_name = "KO (chx10)"', 'session_date = "2008-06-06"', ...
-       'sample_number = 2', 'neuron_id = 1', 'stimulation_id = 2'}';
-query = slwest382_codechallenge.SpikeTriggeredAverages & restrictions;
+       'sample_number = 2', 'neuron_id = 1'}';
+query = slwest382_codechallenge.NeuronComputations & restrictions;
 query_result = fetch1(query,attribute);
 
 % Call plotting function. 
