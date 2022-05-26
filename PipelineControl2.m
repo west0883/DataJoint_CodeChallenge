@@ -129,5 +129,116 @@ for itemi = 1:size(looping_output_list,1)
     end 
 end 
 
+%% Create table of subjects.
+% Create table. Not surpressing outputs so I can watch things build.
+slwest382_codechallenge.Subject
 
+% Grab all subject_names from "sessions". Have to make a cell array 
+% (instead of normal array) or else matlab puts all the strings into one 
+% massive string. 
+subject_names = data(:,1);
 
+% Remove duplicated subjects, which throw an error when populating keys.
+subject_names_unique = unique(subject_names);
+
+% Insert into table. 
+insert(slwest382_codechallenge.Subject, subject_names_unique)
+
+%% Create table of sessions.
+% Create table
+slwest382_codechallenge.Session
+
+% Assume data is already loaded & don't need to spend time loading it
+% again. Grab subjects ands dates.
+session_dates = data(:, 1:2);
+
+% Find unique entries. Have to
+% convert to a table & back because 'rows' doesn't work on cell arrays.
+session_dates_unique = table2cell(unique(cell2table(session_dates), 'stable'));
+
+% Insert dates along with subject names from above. 
+insert(slwest382_codechallenge.Session, session_dates_unique);
+slwest382_codechallenge.Session
+
+%% Create table of samples.
+
+% Create table
+slwest382_codechallenge.Sample
+
+%Grab sample ID numbers from sessions structure, as above.
+sample_numbers = data(:, 1:3);
+
+%Remove any empty entries. (Have to do with a for loop because of the way cells work) 
+empty_indices = [];
+for i =  1:size(data,1)
+    if isempty(data{i,3})
+        empty_indices = [empty_indices; i];
+    end
+end
+sample_numbers(empty_indices, :) = [];
+%Sample numbers don't repeat, but for completeness I'll make sure
+% everything's unique. 
+holder = table2cell(unique(cell2table(sample_numbers)));
+
+% Insert 
+insert(slwest382_codechallenge.Sample, holder);
+slwest382_codechallenge.Sample
+
+%% Create table of stimulation types.
+% Might want to group these across animals, days, neurons. Not dependent on
+% previous tables. 
+
+% Create table
+slwest382_codechallenge.Stimulation
+
+holder = num2cell([[1:5]' all_stimulations_unique]);
+
+% Insert 
+insert(slwest382_codechallenge.Stimulation, holder);
+slwest382_codechallenge.Stimulation
+
+%% Create table of Neurons.
+% Dependent on session, sample, but not stimulation type.
+slwest382_codechallenge.Neuron
+
+%Grab sample ID numbers from sessions structure, as above.
+holder = data(:, [1:3 8]);
+
+%Remove any empty entries. (Have to do with a for loop because of the way cells work) 
+empty_indices = [];
+for i =  1:size(data,1)
+    if isempty(data{i,8})
+        empty_indices = [empty_indices; i];
+    end
+end
+holder(empty_indices, :) = [];
+%Sample numbers don't repeat, but for completeness I'll make sure
+% everything's unique. 
+holder = table2cell(unique(cell2table(holder)));
+
+% Insert 
+insert(slwest382_codechallenge.Neuron, holder);
+slwest382_codechallenge.Neuron
+
+%% Create table of recordings
+% Dependent on neuron, stimulations
+slwest382_codechallenge.Recording
+
+%Grab sample ID numbers from sessions structure, as above.
+holder = data(:, [1:3 8 4]);
+
+%Remove any empty entries. (Have to do with a for loop because of the way cells work) 
+empty_indices = [];
+for i =  1:size(data,1)
+    if isempty(data{i,9})
+        empty_indices = [empty_indices; i];
+    end
+end
+holder(empty_indices, :) = [];
+%Sample numbers don't repeat, but for completeness I'll make sure
+% everything's unique. 
+holder = table2cell(unique(cell2table(holder)));
+
+% Insert 
+insert(slwest382_codechallenge.Recording, holder);
+slwest382_codechallenge.Recording

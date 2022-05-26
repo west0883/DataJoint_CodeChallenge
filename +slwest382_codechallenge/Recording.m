@@ -10,14 +10,6 @@
  movie: longblob
  spike_times: longblob
  %}
-classdef Recording < dj.Imported
-    methods(Access=protected)
-        function makeTuples(self, key, sessions)
-
-
-            sessions
-            key.filtered_image = myfilter(img);
-            self.insert(key)
-        end
-    end
+classdef Recording < dj.Manual
+  
 end
