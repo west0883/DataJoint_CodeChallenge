@@ -15,14 +15,15 @@ classdef NeuronComputations < dj.Computed
             % Fetch the spike-triggered averages & stds of the neuron
             [stas, stds] = fetchn(slwest382_codechallenge.SpikeTriggeredAverage & key, 'sta', 'std');
             
-            % If nan, skip
-            if isnan(stas{1})
+            % If empty. skip (weird, I think it should always give an NaN?)
+            if isempty(stas) 
                 key.avg_sta = NaN;
                 key.avg_std = NaN;
 
             elseif numel(stas) == 1
                  key.avg_sta = stas{1};
                  key.avg_std = stds{1};
+
             else  
                % Concatenate 
                stas_together = cat(3, stas{:});
