@@ -225,7 +225,7 @@ slwest382_codechallenge.Neuron
 slwest382_codechallenge.Recording
 
 %Grab sample ID numbers from sessions structure, as above.
-holder = data(:, [1:3 8 4]);
+holder = data(:, [1:3 8 4:7 9]);
 
 %Remove any empty entries. (Have to do with a for loop because of the way cells work) 
 empty_indices = [];
@@ -235,9 +235,8 @@ for i =  1:size(data,1)
     end
 end
 holder(empty_indices, :) = [];
-%Sample numbers don't repeat, but for completeness I'll make sure
-% everything's unique. 
-holder = table2cell(unique(cell2table(holder)));
+
+% Don't need to look for unique entries here.
 
 % Insert 
 insert(slwest382_codechallenge.Recording, holder);
