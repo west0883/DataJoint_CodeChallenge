@@ -428,20 +428,20 @@ populate(slwest382_codechallenge.NeuronComputations)
 % standard function
 
 % query_result needs to be a single value to properly plot the STA. 
-attribute = 'sta'; 
+attribute = 'avg_sta'; 
 restrictions = {'subject_name = "KO (chx10)"', 'session_date = "2008-06-06"', ...
-       'sample_number = 2', 'neuron_id = 1'}';
+       'sample_number = 2', 'neuron_id = 1', 'delay = 0'}';
 query = slwest382_codechallenge.NeuronComputations & restrictions;
 query_result = fetch1(query,attribute);
 
 % Call plotting function. 
-fig_handle = PlotSTAs(query_result);
+fig_handle = PlotSTAs(query_result, restrictions);
 
-function [fig_handle] = PlotSTAs(query_result)
+function [fig_handle] = PlotSTAs(query_result, restrictions)
     
-    figure_handle = figure; 
+    fig_handle = figure; 
     imagesc(query_result); 
-    colorbar; caxis([-1 1]);
+    colorbar; %caxis([-1 1]);
     title(strjoin(restrictions,', ')); % An unwieldly title, but good enough for now.
 
     % Could add saving instructions here, if I wanted. 
