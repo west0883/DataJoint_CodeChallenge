@@ -131,6 +131,10 @@ clear data;
 data = data_out; 
 save([input_directory 'ret1_data_selfConversion.mat'], 'data');
 
+%% Load data (the provided dataset).
+input_directory = 'Z:\DBSdata\Sarah\DataJoint Code Challenge Data\';
+load([input_directory 'ret1_data.mat'], 'sessions');
+
 %% Create table of subjects.
 
 % Beginning of the actual Code Challenge. Created schema
@@ -143,22 +147,51 @@ save([input_directory 'ret1_data_selfConversion.mat'], 'data');
 % Create table. Not surpressing outputs so I can watch things build.
 slwest382_codechallenge.Subject
 
-% Load data (the provided dataset).
-input_directory = 'Z:\DBSdata\Sarah\DataJoint Code Challenge Data\';
-load([input_directory 'ret1_data.mat'], 'sessions');
-
 % Grab all subject_names from "sessions". Have to make a cell array 
 % (instead of normal array) or else matlab puts all the strings into one 
 % massive string. Flip so all entries are put in as own row. 
 subject_names = {sessions(:).subject_name}';
 
-% Remove duplicated subjects.
+% Remove duplicated subjects, which throw an error when populating keys.
+subject_names_unique = unique(subject_names);
 
-% Insert into table. 
-insert(slwest382_codechallenge.Subject, subject_names);
+% Insert into table. Watch output.
+insert(slwest382_codechallenge.Subject, subject_names_unique)
+
+%% Create table of sessions.
+% Create table
+slwest382_codechallenge.Session
+
+% Assume data is already loaded & don't need to spend time loading it
+% again. Grab session dates from sessions structure, as above.
+session_dates = {sessions(:).session_date}';
+
+% Find unique entries. Have to
+% convert to a table & back because 'rows' doesn't work on cell arrays.
+holder = table2cell(unique(cell2table([subject_names session_dates])));
+
+% Insert dates along with subject names from above. 
+insert(slwest382_codechallenge.Session, holder);
 
 %% Create table of samples.
 
+% Create table
+slwest382_codechallenge.Sample
+
+%Grab sample ID numbers from sessions structure, as above.
+sample_numbers = {sessions(:).sample_number}';
+
+% Sample numbers don't repeat, but for completeness I'll make sure
+% everything's unique. 
+holder = table2cell(unique(cell2table([subject_names session_dates sample_numbers])));
+
+% Insert 
+insert(slwest382_codechallenge.Sample, holder);
+
+%% Create table of neurons
+% Neurons depend on the session, sample id, but not the stimulations. 
+
+
 %% Create table of stimulations
 
-%% Create table of spikes? 
+
