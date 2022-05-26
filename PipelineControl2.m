@@ -434,6 +434,9 @@ restrictions = {'subject_name = "KO (chx10)"', 'session_date = "2008-06-06"', ..
 query = slwest382_codechallenge.SpikeTriggeredAverages & restrictions;
 query_result = fetch1(query,attribute);
 
+% Call plotting function. 
+fig_handle = PlotSTAs(query_result);
+
 function [fig_handle] = PlotSTAs(query_result)
     
     figure_handle = figure; 
