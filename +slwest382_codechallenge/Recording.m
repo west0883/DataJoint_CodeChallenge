@@ -7,7 +7,6 @@
  n_frames: int
  movie: longblob
  spike_times: longblob
- fps: double
  pixel_size: double
  %}
 classdef Recording < dj.Manual
