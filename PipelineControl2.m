@@ -313,7 +313,10 @@ clear all;
 
 % Will increment by 1 frame for now, may make incrementation larger if 1
 % frame do
-delays = [-5:30];
+%delays = [-5:30];
+% Greatly reducing the delays because this computation is taking way too
+% much time.
+delays = [-4:4:16];
 delays = num2cell(delays)';
 
 % Create Delay look up table.
@@ -377,20 +380,36 @@ populate(slwest382_codechallenge.DelayAdjusted)
 % idea would be to do something like calculate the full movie for each sample/stimulation, 
 % but that might mean going back and making a video ID for each neuron, which I'd do if I had more time.]
 
-%% Create & run spike-triggered average computed table (per neuron/recording?)
+%% Create & run spike-triggered average computed table (per recording?)
 % Dependent on each recording, adjusted delays. 
 % Retinal cells are supposed to be contrast-oriented with place
 % preferences, so don't need to account for changes in the video over time
 % for right now.
  slwest382_codechallenge.SpikeTriggeredAverage;
- parpopulate(slwest382_codechallenge.SpikeTriggeredAverage);
+ populate(slwest382_codechallenge.SpikeTriggeredAverage);
+
+ % Was using parpopulate to see if it started a parallel pool, but I don't
+ % think it did. I'm concerned with how slow this is going. Hopefully
+ % there's just something I don't know that will make this go much faster.
 
 %% Create & run compute table that computes spike-triggered average across different queries?
 % Not sure yet if this needs its own table separate from the one above, or
 % if it can handle query combinations inside it. I think the best way is by
-% using aggr -- then I can make new objects for each query, don't need to
-% make new table class. 
+% using aggr -- needs a new table type, I think.  
+% [Haven't tried this yet];
+slwest382_codechallenge.Neuron.aggr(slwest382_codechallenge.SpikeTriggeredAverage, 'avg(sta)->avg_sta')
+slwest382_codechallenge.Neuron.aggr(slwest382_codechallenge.SpikeTriggeredAverage, 'avg(std)->avg_std')
 
 %% Create & run a compute table that produces figures.
 % Would include the figure obejct in the table? Then call the plotting of the
-% figure here. 
+% figure here. Can include average STAs and average stds
+
+% [Havent tried this yet]
+% No, wait, nevermind, I'm seeing in the documentation that DJ only
+% supports specific dataypes, 
+% % Something like: 
+% slwest382_codechallenge.STAFigure
+% slwest382_codechallenge.STAFigure
+
+
+
