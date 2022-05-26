@@ -132,7 +132,7 @@ for itemi = 1:size(looping_output_list,1)
     % Sample 
     data{itemi, 3} = sessions(session).sample_number;
 
-    if ~isempty(stimulation)
+    if ~isempty(stimulation) && ~any(isnan(stimulation))
       
         % Stimulation id 
         data{itemi, 4} = sessions(session).stimulations(stimulation).stimulation_id;
@@ -434,7 +434,7 @@ draw(dj.ERD(slwest382_codechallenge.getSchema))
 % query_result needs to be a single value to properly plot the STA. 
 attribute = 'avg_sta'; 
 restrictions = {'subject_name = "KO (chx10)"', 'session_date = "2008-06-06"', ...
-       'sample_number = 2', 'neuron_id = 1', 'delay = 0'}';
+       'sample_number = 2', 'neuron_id = 6', 'delay = 4'}';
 query = slwest382_codechallenge.NeuronComputations & restrictions;
 query_result = fetch1(query,attribute);
 
