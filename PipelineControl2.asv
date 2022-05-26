@@ -438,11 +438,6 @@ function [fig_handle] = PlotSTAs(query_result)
     
     figure_handle = figure; 
     imagesc(query_result); 
-    colorbar; caxis([-1 1]);
-    title(strjoin(restrictions,', ')); % An unwieldly title, but good enough for now.
-
-    % Could add saving instructions here, if I wanted. 
+    colorbar; 
 end 
-
-
 
