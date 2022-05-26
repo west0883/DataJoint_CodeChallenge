@@ -339,7 +339,8 @@ insert(slwest382_codechallenge.FPS, fps_unique);
 %% Make a calculated table of adjusted delays.
 % Create & populate. 
 % I'm a bit concerned with how slow this populating is, not sure what's
-% causing that since it's a quick calculation. 
+% causing that since it's a quick calculation. Might just be communication
+% time to the server.
 slwest382_codechallenge.DelayAdjusted
 populate(slwest382_codechallenge.DelayAdjusted)
 
@@ -361,10 +362,20 @@ populate(slwest382_codechallenge.DelayAdjusted)
 % all_recordings.aggr(all_recordings * slwest382_codechallenge.Stimulation, calculation);
 
 % I guess I do need a new class type?
+%slwest382_codechallenge.FullMovie
+
+% This takes awhile, but I guess that's to be expected when you're
+% transferring around large-ish arrays. [I stopped the calculation only a
+% few iterations in]
+%populate(slwest382_codechallenge.FullMovie)
+
+%[ Actually, it might make more sense to just calculate this at the STA
+% step, so I don't need large full videos. ]
 
 %% Create & run spike-triggered average computed table (per neuron/recording?)
 % Dependent on each recording, adjusted delays. Will incorportate spike times,
 % full-size movies.  
+
 
 %% Create & run compute table that computes spike-triggered average across different queries?
 % Not sure yet if this needs its own table separate from the one above, or
