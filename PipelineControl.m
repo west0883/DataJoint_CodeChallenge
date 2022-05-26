@@ -168,7 +168,7 @@ session_dates = {sessions(:).session_date}';
 
 % Find unique entries. Have to
 % convert to a table & back because 'rows' doesn't work on cell arrays.
-holder = table2cell(unique(cell2table([subject_names session_dates])));
+holder = table2cell(unique(cell2table([subject_names session_dates]), 'stable'));
 
 % Insert dates along with subject names from above. 
 insert(slwest382_codechallenge.Session, holder);
@@ -231,13 +231,54 @@ end
 insert(slwest382_codechallenge.Neuron, holding_structure_new);
 
 %% Create table of stimulation types.
+% Might want to group these across animals, days, neurons. Not dependent on
+% previous tables. 
 
-% Get lists of stimulations.
+% Create table
+slwest382_codechallenge.Stimulation
+
+% Write out needed fields.
+fields = {'stim_width', 'stim_height', 'x_block_size', 'y_block_size'};
+
+% Creat empty structure for holding stim parameters.
+holding_structure = struct(); 
+for fieldi = 1:numel(fields)
+    holding_structure = setfield(holding_structure, fields{fieldi}, []);
+end 
+
+% Get lists of possible stimulation types.
 for i = 1:numel(sessions)
     
-    % Only if stimulations isn't empty. Can skip if no stimulations.
-    if ~isempty(sessions(i).stimulations)
-        
+    % For each stimulation
+    for stimi = 1:numel(sessions(i).stimulations)
 
+        % Assign fields.
+        temp_structure = struct();
+        for fieldi = 1:numel(fields)
+             temp_structure = setfield(temp_structure, fields{fieldi}, getfield(sessions(i).stimulations(stimi), fields{fieldi}));
+        end
+
+        % Concatenate with holding structure.
+        holding_structure = [holding_structure; temp_structure]; 
     end
 end
+
+% Remove the empty first entry of holding_structure
+holding_structure = holding_structure(2:end); 
+
+% Find unique entries. Convert it to a table and back because eveything in
+% Matlab is hard.
+holding_structure_unique = table2struct(unique(struct2table(holding_structure), 'stable'));
+
+% Add the stimulation id to structure;
+for stimi = 1: numel(holding_structure_unique)
+    holding_structure_unique(stimi).stimulation_id = stimi;
+end
+
+% Insert into Stimulation table. 
+insert(slwest382_codechallenge.Stimulation, holding_structure_unique);
+
+%% Create a recordings table.
+% Dependent on neuron, stimulation type. Will have other, non-primary key
+% attributes. 
+
