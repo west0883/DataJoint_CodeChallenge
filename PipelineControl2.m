@@ -16,8 +16,8 @@ load([input_directory 'ret1_data.mat'], 'sessions');
 %% Define all stimulation types.
 % Write out needed fields.
 % Went back to add fps; adds a 6th unique stimulation type, but only
-% because of rounding, which shouldn't matter for most analysis steps.
-%  I'll put in a rounding step. 
+% because of rounding, which shouldn't matter for most analysis steps but
+% user might still want to have that information. I'll put in a rounding step. 
 fields = {'stim_width', 'stim_height', 'x_block_size', 'y_block_size', 'fps'};
 
 all_stimulations = []; 
@@ -145,11 +145,8 @@ for itemi = 1:size(looping_output_list,1)
         % Spike times
         data{itemi, 9} = sessions(session).stimulations(stimulation).spikes{neuron};
 
-        % Frames per second.
-        data{itemi, 10} = sessions(session).stimulations(stimulation).fps;
-
         % Pixel size.
-        data{itemi, 11} = sessions(session).stimulations(stimulation).pixel_size;
+        data{itemi, 10} = sessions(session).stimulations(stimulation).pixel_size;
 
     end 
 end 
@@ -272,3 +269,36 @@ holder(empty_indices, :) = [];
 % Matlab. 
 insert(slwest382_codechallenge.Recording, holder);
 slwest382_codechallenge.Recording
+
+%% Beginning of analysis steps within DataJoint framework.
+% Can delete all other variables in workspace. 
+clear all;
+
+%% Create look-up table of delays to calculate spike-triggered average across. 
+% Will put in values in here instead of in table script to make changes
+% easier. Negative delay = neuron fires before stimulus, as
+% a control. Finest resolution I have is up to 60 fps in the movie (~16.67 ms), 
+% but some fps are closer to 30 fps (~33.33 ms). For entering in ranges,
+% it's more practical to enter movie frames, then convert to ms later, so
+% all delays will be in units of frames. I'll adjust for stim IDs of lower
+% fps in the calculation steps, so I don't need to include all the possible
+% fps rates here in the look up table (although this LUT does assume a
+% highest or at least most common rate of 60 fps).
+
+% Off the top of my head, I don't know the reaction time of most retinal
+% cells, but one article (Cao et al, 2007 DOI:
+% 10.1016/j.visres.2006.11.027) says it's as high as 500 ms (!) in poor
+% contrast conditions. So I'll go up to 500 ms (about 30 frames in the 60
+% fps condition). I'll do only about 5 negative frames as the control-- don't
+% want to overload my computation times. 
+
+% Will increment by 1 frame for now, may make incrementation larger if 1
+% frame do
+delays = [-5:30];
+delays = num2cell(delays)';
+
+% Create Delay look up table.
+slwest382_codechallenge.Delay
+
+% Insert delays.
+insert(slwest382_codechallenge.Delay, delays);
