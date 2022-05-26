@@ -413,6 +413,10 @@ populate(slwest382_codechallenge.NeuronComputations)
 %% In an ideal world, I'd do something like caculate firing rates per stimulus type 
 % as a supplementary experiement. But that's not a part of the challenge. 
 
+%% Draw ERD
+% That's neat. 
+draw(dj.ERD(slwest382_codechallenge.getSchema))
+
 %% Create & run a compute table that produces figures.
 % Would include the figure obejct in the table? Then call the plotting of the
 % figure here. Can include average STAs and average stds
@@ -446,6 +450,5 @@ function [fig_handle] = PlotSTAs(query_result, restrictions)
 
     % Could add saving instructions here, if I wanted. 
 end 
-
 
 
