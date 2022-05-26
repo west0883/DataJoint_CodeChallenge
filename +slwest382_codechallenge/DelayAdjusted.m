@@ -3,7 +3,7 @@
 ->slwest382_codechallenge.Delay       # Dependent on entries of Delay, FPS                       # fps of stimulus movie. 
 ->slwest382_codechallenge.FPS
 ---
-delay_adjusted: double                # Delay (in frames) adjusted from the
+delay_adjusted = NULL : double                # Delay (in frames) adjusted from the
                                       # fps of the movie stimulus. Meant to
                                       # be used as an index for finding the
                                       # correct movie frame.
