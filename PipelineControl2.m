@@ -247,7 +247,9 @@ for i =  1:size(data,1)
 end
 holder(empty_indices, :) = [];
 
-% Don't need to look for unique entries here.
+% Don't need to look for unique entries here. Throws an error because
+% unique can't handle looking at the different arrays in movie and spike
+% times.
 
 % Insert.
 % This tends to take a long time, to the point I was afraid I'd crashed
