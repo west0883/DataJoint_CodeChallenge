@@ -1,7 +1,7 @@
 %{
   # Spike-triggered averages
   -> slwest382_codechallenge.Recording
-  -> slwest382_codechallenge.Stimulation
+  -> slwest382_codechallenge.Stimulation # Probably don't need this.
   -> slwest382_codechallenge.Delay
   ---
   sta = NULL : longblob                 # The calculated spike triggered averages
