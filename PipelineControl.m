@@ -15,7 +15,7 @@ py.importlib.import_module('numpy');
 py.importlib.import_module('pickle');
 
 % Read-in data file to a buffered reader format. 
-input_directory = 'Z:\DBSdata\Sarah\DataJoint Code Challenge\Data\';
+input_directory = 'Z:\DBSdata\Sarah\DataJoint Code Challenge Data\';
 fid=py.open([input_directory 'ret1_data.pkl'],'rb');
 
 % Load from buffered reader structure, convert to cell array.
@@ -125,10 +125,40 @@ for celli = 1:numel(data)
             data_out{celli}= setfield(data_out{celli}, entries{fieldi}, value); 
     end 
 end 
-%%
-% Rename and save data_out
+
+%% Rename and save data_out
 clear data;
 data = data_out; 
-save([input_directory 'ret1_data.mat'], 'data');
+save([input_directory 'ret1_data_selfConversion.mat'], 'data');
 
-%%
+%% Create table of subjects.
+
+% Beginning of the actual Code Challenge. Created schema
+% +slwest382_codchallenge in DataJoint tutorial database. 
+
+% Thought I could do this with the "import" type class so I don't have to 
+% load the data or write out the subject names, but there are no
+% keys set up yet so I believe I need to do a "manual" type for this.
+
+% Create table. Not surpressing outputs so I can watch things build.
+slwest382_codechallenge.Subject
+
+% Load data (the provided dataset).
+input_directory = 'Z:\DBSdata\Sarah\DataJoint Code Challenge Data\';
+load([input_directory 'ret1_data.mat'], 'sessions');
+
+% Grab all subject_names from "sessions". Have to make a cell array 
+% (instead of normal array) or else matlab puts all the strings into one 
+% massive string. Flip so all entries are put in as own row. 
+subject_names = {sessions(:).subject_name}';
+
+% Remove duplicated subjects.
+
+% Insert into table. 
+insert(slwest382_codechallenge.Subject, subject_names);
+
+%% Create table of samples.
+
+%% Create table of stimulations
+
+%% Create table of spikes? 
