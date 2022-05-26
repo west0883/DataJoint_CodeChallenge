@@ -188,49 +188,6 @@ holder = table2cell(unique(cell2table([subject_names session_dates sample_number
 % Insert 
 insert(slwest382_codechallenge.Sample, holder);
 
-%% Create table of neurons
-% Neurons depend on the session, sample id, but not the stimulations. 
-% Originally had this before the "Stimulation" section, but moved it so I
-% could include a concatenation of the stim ids. 
-
-% Create table
-slwest382_codechallenge.Neuron
-
-% I thought about using the Server-side inserts for these tables, but it
-% looks like you can't add fields to each tuple.
-% Adding neuron ids in the structure way, to try it out.
-holding_structure = fetch(slwest382_codechallenge.Sample, '*');
-
-% Make a new holding structure for structure with neuron ids added.
-f = [fieldnames(holding_structure)' {'neuron_id'}];
-f{2,1} = {};
-holding_structure_new= struct(f{:});
-
-% Grab neuron id numbers.
-for i = 1:numel(sessions)
-    
-    % Only if stimulations isn't empty. Can skip if no stimulations.
-    if ~isempty(sessions(i).stimulations)
-        
-        % Just use the first entry of stimulations, because number of
-        % neurons won't change between stims.
-        number_of_neurons = size(sessions(i).stimulations(1).spikes, 1);
-    
-        % Make 
-        temp_structure = repmat(holding_structure(i), number_of_neurons, 1);
-        % For each neuron, insert neuron ID
-        for neuroni = 1:number_of_neurons
-            temp_structure(neuroni).neuron_id = neuroni; 
-        end
-
-        % Concatenate temp structure into holding_structure_new.
-        holding_structure_new = [holding_structure_new; temp_structure];
-    end
-    
-end 
-
-% Insert into Neuron table. 
-insert(slwest382_codechallenge.Neuron, holding_structure_new);
 
 %% Create table of stimulation types.
 % Might want to group these across animals, days, neurons. Not dependent on
@@ -308,9 +265,66 @@ for i = 1:numel(sessions)
             stim_y_block_size = holding_structure_unique(iii).y_block_size;
 
             if isequal([stim_height, x_block_size, y_block_size], [stim_stim_height, stim_x_block_size, stim_y_block_size])
-                sessions(i).stimulations(ii).stimulation_id = iii;
+                sessions(i).stimulations(ii).stimulation_id = holding_structure_unique(iii).stimulation_id;
             end
         end 
     end 
 end
 
+%% Create table of neurons
+% Neurons depend on the session, sample id, but not the stimulations. 
+% Originally had this before the "Stimulation" section, but moved it so I
+% could include a concatenation of the stim ids. 
+
+% Create table
+slwest382_codechallenge.Neuron
+
+% I thought about using the Server-side inserts for these tables, but it
+% looks like you can't add fields to each tuple.
+% Adding neuron ids in the structure way, to try it out.
+holding_structure = fetch(slwest382_codechallenge.Sample, '*');
+
+% Make a new holding structure for structure with neuron ids added.
+f = [fieldnames(holding_structure)' {'neuron_id'} {'stimulation_id'}];
+f{2,1} = {};
+holding_structure_new= struct(f{:});
+
+% All stim ids 
+all_stim_ids  = []; 
+neuron_stim_ids = [];
+% Grab neuron id numbers.
+for i = 1:numel(sessions)
+    
+    % Only if stimulations isn't empty. Can skip if no stimulations.
+    if ~isempty(sessions(i).stimulations)
+        
+        % Just use the first entry of stimulations, because number of
+        % neurons won't change between stims.
+        number_of_neurons = size(sessions(i).stimulations(1).spikes, 1);
+    
+        % Make 
+        temp_structure = repmat(holding_structure(i), number_of_neurons*numel(sessions(i).stimulations) , 1);
+        counter = 0; 
+        % For each neuron, insert neuron ID
+        for neuroni = 1:number_of_neurons
+            temp_structure(neuroni).neuron_id = neuroni; 
+       
+            % For each stimulation,
+            for ii = 1:numel(sessions(i).stimulations)
+                temp_stims = repmat(sessions(i).stimulations(ii).stimulation_id, number_of_neurons,1);
+                
+                temp_neurons = [1:number_of_neurons]';
+                all_stim_ids = [all_stim_ids; temp_stims];
+                neuron_stim_ids = [neuron_stim_ids; temp_neurons ];
+            end
+            % Concatenate temp structure into holding_structure_new.
+            holding_structure_new = [holding_structure_new; temp_structure];
+        end 
+    else 
+
+    end
+    
+end 
+
+% Insert into Neuron table. 
+insert(slwest382_codechallenge.Neuron, holding_structure_new);
