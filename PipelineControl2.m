@@ -95,6 +95,13 @@ end
 % types. Don't need fps in this cell array now because fps is in the stim
 % type.
 
+% [I'm realizing now (the next day) that manual tables seem to be meant for
+% primary keys only, and I can import the non-primary keys separatly,
+% likely in the "Recordings" table I called below. That would give all the
+% benefits of the upstreadm/downstream connection that the tables use.
+% Since the cell array approach I use here works *okay*, I'll leave it like
+% this because of time constraints.]
+
 % Grab all iterations with code I've written previously.
 loop_list.iterators = {'session', {'[1:size(loop_variables.sessions,2)]'}, 'session_iterator';
                        'stimulation', {'[1:size({loop_variables.sessions(', 'session_iterator', ').stimulations(:).fps},2)]'}, 'stimulation_iterator';
@@ -267,6 +274,12 @@ holder(empty_indices, :) = [];
 % Insert.
 % This tends to take a long time, to the point I was afraid I'd crashed
 % Matlab. 
+
+% [I'm realizing now (the next day) that I could've entered the timeseries 
+% and movies as different tables, but I'm not sure if that would remove the
+% benefits of making sure you don't have "orphaned" data where there's a
+% spike timeseries or a movie but not the other.
+
 insert(slwest382_codechallenge.Recording, holder);
 slwest382_codechallenge.Recording
 
@@ -280,10 +293,16 @@ clear all;
 % a control. Finest resolution I have is up to 60 fps in the movie (~16.67 ms), 
 % but some fps are closer to 30 fps (~33.33 ms). For entering in ranges,
 % it's more practical to enter movie frames, then convert to ms later, so
-% all delays will be in units of frames. I'll adjust for stim IDs of lower
-% fps in the calculation steps, so I don't need to include all the possible
-% fps rates here in the look up table (although this LUT does assume a
-% highest or at least most common rate of 60 fps).
+% all delays will be in units of frames. 
+% 
+% I'll adjust for stim IDs of lower fps in the calculation steps, so I don't 
+% need to include all the possible fps rates here in the look up table 
+% (although this LUT does assume a highest or at least most common rate of 60 fps).
+
+% Actually, now I think I'll make this dependent on the unique frames per
+% second. That means I WON'T enter values here, I don't think. (Actually,
+% that doesn't work, because that means using calculations, so I'll make a
+% separate, computed class for including each delay per fps).
 
 % Off the top of my head, I don't know the reaction time of most retinal
 % cells, but one article (Cao et al, 2007 DOI:
@@ -302,3 +321,37 @@ slwest382_codechallenge.Delay
 
 % Insert delays.
 insert(slwest382_codechallenge.Delay, delays);
+
+
+%%  Make a look-up table of unique fps. 
+% Fetch fps values from stimulation table.
+fps_array = fetchn(slwest382_codechallenge.Stimulation, 'fps');
+
+% Round fps values & find unique ones.
+fps_unique = num2cell(unique(round(fps_array)));
+    
+% Create FPS look up table.
+slwest382_codechallenge.FPS
+
+% Insert fps.
+insert(slwest382_codechallenge.FPS, fps_unique);
+
+%% Make a calculated table of adjusted delays.
+% Create & populate.
+% [Still working on dealing with null values].
+slwest382_codechallenge.DelayAdjusted
+populate(slwest382_codechallenge.DelayAdjusted)
+
+%% Make a calculated table of full-size movies 
+% So you can calculate spike-triggered averages across stimulation type. 
+% Will be dependent on Recordings table. 
+
+%% Create & run spike-triggered average computed table (per neuron/recording?)
+% Dependent on each recording & each delay. 
+
+%% Create & run compute table that computes spike-triggered average across different queries
+% Not sure yet if this needs its own table separate from the one above.
+
+%% Create & run a compute table that produces figures.
+% Would include the .fig obejct in the table? Then call the plotting of the
+% figure here. 
