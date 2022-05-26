@@ -12,8 +12,13 @@ classdef FullMovie < dj.Computed
             this_data = slwest382_codechallenge.Recording * slwest382_codechallenge.Stimulation & key; 
 
             % Fetch each needed attribute.
-            [x_block_size, y_block_size, movie] = this_data.fetch1('x_block_size','y_block_size', 'movie');
+            % [This got an error, because this is a "gen revlar". Maybe I need to fetch the whole thing. 
+            %x_block_size = fetch(this_data.x_block_size);
+            %y_block_size = fetch(this_data.y_block_size);
+            %movie = fetch(this_data.y_block_size);
  
+            % Fetch this_data. 
+            
             % Calculate full movie;
             key.full_movie = repmat(movie, x_block_size, y_block_size, 1);
      

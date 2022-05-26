@@ -4,10 +4,10 @@
   -> slwest382_codechallenge.Stimulation
   -> slwest382_codechallenge.Delay
   ---
-  sta = NULL : longblob                 # The calculated spike triggered averages
+  sta: longblob                 # The calculated spike triggered averages
                                 # (will be an averaged movie frame of the 
                                 # frames that trigger a spike)
-  std = NULL: longblob                 # Standard deviation of the frames that
+  std: longblob                 # Standard deviation of the frames that
                                 # trigger a spike (will be a movie frame)
   
 %}
@@ -37,24 +37,18 @@ classdef SpikeTriggeredAverage < dj.Computed
             % Set up fetch queries as strings, I guess. I haven't found a
             % better way to do this. 
             querystring1 = sprintf('delay = %d', key.delay);
-            querystring2 = sprintf('fps = %d', fps);
+            querystring2 = sprintf('fps = %d', kf);
 
             % Find relevent delay from look-up table.
-            delay_adjusted = fetch1(slwest382_codechallenge.DelayAdjusted & {querystring1, querystring2},'delay_adjusted');
-            
-            % If adjusted delay is NaN, make computations NaN as well.
-            if isnan(delay_adjusted)
-               key.sta = NaN; 
-               key.std = NaN;
-            else
-                
-                
-                % compute various statistics on activity
-                key.sta = mean(activity); % compute mean
-                key.stdev = std(activity); % compute standard deviation
-            
-            end 
+            this_data = fetch(slwest382_codechallenge.DelayAdjusted & {'delay = key.delay', 'fps = fps'},'*');
+            delay_adjusted = fetch1(slwest382_codechallenge.DelayAdjusted & {'delay = this_delay', 'fps = this_fps'}, 'delay_adjusted');
+
+            % compute various statistics on activity
+            key.std = mean(activity); % compute mean
+            key.stdev = std(activity); % compute standard deviation
+     
             self.insert(key);
+            sprintf('Computed statistics for for %d experiment on %s',key.mouse_id,key.session_date)
 
         end
     end

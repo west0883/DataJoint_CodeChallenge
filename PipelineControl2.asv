@@ -339,8 +339,7 @@ insert(slwest382_codechallenge.FPS, fps_unique);
 %% Make a calculated table of adjusted delays.
 % Create & populate. 
 % I'm a bit concerned with how slow this populating is, not sure what's
-% causing that since it's a quick calculation. Might just be communication
-% time to the server.
+% causing that since it's a quick calculation. 
 slwest382_codechallenge.DelayAdjusted
 populate(slwest382_codechallenge.DelayAdjusted)
 
@@ -354,29 +353,13 @@ populate(slwest382_codechallenge.DelayAdjusted)
 % I don't think this counts as an aggregation function, because it's not a
 % summary statistic. But I guess I'll try it. 
 
-% [This didn't work. Didn't throw an error, but didn't create the new
-% attribute. Trying to do it on slwest382_codechallenge.Recording directly
-% threw an error.]
-% calculation = 'repmat(movie, x_block_size, y_block_size)->full_movie';
-% all_recordings = slwest382_codechallenge.Recording; 
-% all_recordings.aggr(all_recordings * slwest382_codechallenge.Stimulation, calculation);
+calculation = 'repm'
 
-% I guess I do need a new class type?
-%slwest382_codechallenge.FullMovie
-
-% This takes awhile, but I guess that's to be expected when you're
-% transferring around large-ish arrays. [I stopped the calculation only a
-% few iterations in]
-%populate(slwest382_codechallenge.FullMovie)
-
-%[ Actually, it might make more sense to just calculate this at the STA
-% step, so I don't need large full videos. ]
+slwest382_codechallenge.Recording.aggr(slwest382_codechallenge.Recording * slwest382_codechallenge.Stimulation, ''
 
 %% Create & run spike-triggered average computed table (per neuron/recording?)
 % Dependent on each recording, adjusted delays. Will incorportate spike times,
 % full-size movies.  
- slwest382_codechallenge.SpikeTriggeredAverage
- populate(slwest382_codechallenge.SpikeTriggeredAverage)
 
 %% Create & run compute table that computes spike-triggered average across different queries?
 % Not sure yet if this needs its own table separate from the one above, or
