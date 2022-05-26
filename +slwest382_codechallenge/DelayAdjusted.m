@@ -17,7 +17,7 @@ classdef DelayAdjusted< dj.Computed
             % Default conversion fps. (Should try making this a member of
             % the class later).
             conversion_fps = 60; 
-
+     
             % Use fps and delay to calculate adjusted delay.
             increment_value = conversion_fps/key.fps;
 
