@@ -337,21 +337,41 @@ slwest382_codechallenge.FPS
 insert(slwest382_codechallenge.FPS, fps_unique);
 
 %% Make a calculated table of adjusted delays.
-% Create & populate.
-% [Still working on dealing with null values].
+% Create & populate. 
+% I'm a bit concerned with how slow this populating is, not sure what's
+% causing that since it's a quick calculation. 
 slwest382_codechallenge.DelayAdjusted
 populate(slwest382_codechallenge.DelayAdjusted)
 
 %% Make a calculated table of full-size movies 
 % So you can calculate spike-triggered averages across stimulation type. 
 % Will be dependent on Recordings table. 
+% [Not sure how granular calculated tables should be, or the pros and cons
+% of making a new table class for each step versus just making new ojects
+% called from a class-- new objects may just work well for querying witihn
+% a table/projecting and aggregating?]
+% I don't think this counts as an aggregation function, because it's not a
+% summary statistic. But I guess I'll try it. 
+
+% [This didn't work. Didn't throw an error, but didn't create the new
+% attribute. Trying to do it on slwest382_codechallenge.Recording directly
+% threw an error.]
+% calculation = 'repmat(movie, x_block_size, y_block_size)->full_movie';
+% all_recordings = slwest382_codechallenge.Recording; 
+% all_recordings.aggr(all_recordings * slwest382_codechallenge.Stimulation, calculation);
+
+% I guess I do need a new class type?
 
 %% Create & run spike-triggered average computed table (per neuron/recording?)
-% Dependent on each recording & each delay. 
+% Dependent on each recording, adjusted delays. Will incorportate spike times,
+% full-size movies.  
 
-%% Create & run compute table that computes spike-triggered average across different queries
-% Not sure yet if this needs its own table separate from the one above.
+%% Create & run compute table that computes spike-triggered average across different queries?
+% Not sure yet if this needs its own table separate from the one above, or
+% if it can handle query combinations inside it. I think the best way is by
+% using aggr -- then I can make new objects for each query, don't need to
+% make new table class. 
 
 %% Create & run a compute table that produces figures.
-% Would include the .fig obejct in the table? Then call the plotting of the
+% Would include the figure obejct in the table? Then call the plotting of the
 % figure here. 
