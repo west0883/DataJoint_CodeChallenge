@@ -375,7 +375,8 @@ populate(slwest382_codechallenge.DelayAdjusted)
 %% Create & run spike-triggered average computed table (per neuron/recording?)
 % Dependent on each recording, adjusted delays. Will incorportate spike times,
 % full-size movies.  
-
+ slwest382_codechallenge.SpikeTriggeredAverage
+ populate(slwest382_codechallenge.SpikeTriggeredAverage)
 
 %% Create & run compute table that computes spike-triggered average across different queries?
 % Not sure yet if this needs its own table separate from the one above, or
