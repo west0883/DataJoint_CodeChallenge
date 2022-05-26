@@ -6,6 +6,7 @@ stim_width: int
 stim_height: int
 x_block_size: int
 y_block_size: int
+fps: double
 
 %}
 
