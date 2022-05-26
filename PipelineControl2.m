@@ -15,7 +15,10 @@ load([input_directory 'ret1_data.mat'], 'sessions');
 
 %% Define all stimulation types.
 % Write out needed fields.
-fields = {'stim_width', 'stim_height', 'x_block_size', 'y_block_size'};
+% Went back to add fps; adds a 6th unique stimulation type, but only
+% because of rounding, which shouldn't matter for most analysis steps.
+%  I'll put in a rounding step. 
+fields = {'stim_width', 'stim_height', 'x_block_size', 'y_block_size', 'fps'};
 
 all_stimulations = []; 
 
@@ -39,7 +42,14 @@ for i = 1:numel(sessions)
 end
 
 % Find unique entries. 
-[all_stimulations_unique, rows, ~] = unique(all_stimulations, 'rows', 'stable');
+[all_stimulations_unique, ~, ~] = unique(all_stimulations, 'rows', 'stable');
+
+% Check that they're still unique with rounding. 
+[all_stimulations_unique_rounded, rows, ~] = unique(round(all_stimulations_unique), 'rows', 'stable');
+
+% Keep only the entries that were unique with rounding, but keep unrounded
+% values.
+all_stimulations_unique = all_stimulations_unique(rows,:);
 
 %% Go back and put the stimulation flag back into sessions.
 
@@ -80,6 +90,11 @@ end
 % don't seem to change, but chould in theory; they are dependent on each 
 % recording).
 
+% Realized fps is of the stimulation movie, not the sampling rate of
+% recording, and it does change. So now I'll go back and add that to stim
+% types. Don't need fps in this cell array now because fps is in the stim
+% type.
+
 % Grab all iterations with code I've written previously.
 loop_list.iterators = {'session', {'[1:size(loop_variables.sessions,2)]'}, 'session_iterator';
                        'stimulation', {'[1:size({loop_variables.sessions(', 'session_iterator', ').stimulations(:).fps},2)]'}, 'stimulation_iterator';
@@ -90,7 +105,7 @@ loop_variables.sessions = sessions;
 
 
 data_titles = {'subject', 'date', 'sample', 'stimulation id', 'onset', ...
-    'frames', 'movie', 'neuron id', 'firing times', 'fps', 'pixel size'};
+    'frames', 'movie', 'neuron id', 'firing times', 'pixel size'};
 data = cell(numel(looping_output_list), numel(data_titles));
 
 % For each item in looping_output_list, 
@@ -164,7 +179,7 @@ session_dates = data(:, 1:2);
 
 % Find unique entries. Have to
 % convert to a table & back because 'rows' doesn't work on cell arrays.
-session_dates_unique = table2cell(unique(cell2table(session_dates), 'stable'));
+session_dates_unique = table2cell(unique(cell2table(session_dates),'rows', 'stable'));
 
 % Insert dates along with subject names from above. 
 insert(slwest382_codechallenge.Session, session_dates_unique);
@@ -235,8 +250,9 @@ slwest382_codechallenge.Neuron
 % Dependent on neuron, stimulations
 slwest382_codechallenge.Recording
 
-%Grab sample ID numbers from sessions structure, as above.
-holder = data(:, [1:3 8 4:7 9:11]);
+%Grab sample ID numbers from sessions structure, as above. Don't need fps
+% because that's in the stim ID.
+holder = data(:, [1:3 8 4:7 9:10]);
 
 %Remove any empty entries. (Have to do with a for loop because of the way cells work) 
 empty_indices = [];
