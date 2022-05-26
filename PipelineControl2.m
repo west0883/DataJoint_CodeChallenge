@@ -371,12 +371,19 @@ populate(slwest382_codechallenge.DelayAdjusted)
 
 %[ Actually, it might make more sense to just calculate this at the STA
 % step, so I don't need large full videos. ]
+%[Well, maybe would be beneficial to not have to calculate these for every
+%delay-- but I don't necessarily want to take up a ton of space on their
+%server... especially because right now I'm doing it for every neuron. The best 
+% idea would be to do something like calculate the full movie for each sample/stimulation, 
+% but that might mean going back and making a video ID for each neuron, which I'd do if I had more time.]
 
 %% Create & run spike-triggered average computed table (per neuron/recording?)
-% Dependent on each recording, adjusted delays. Will incorportate spike times,
-% full-size movies.  
- slwest382_codechallenge.SpikeTriggeredAverage
- populate(slwest382_codechallenge.SpikeTriggeredAverage)
+% Dependent on each recording, adjusted delays. 
+% Retinal cells are supposed to be contrast-oriented with place
+% preferences, so don't need to account for changes in the video over time
+% for right now.
+ slwest382_codechallenge.SpikeTriggeredAverage;
+ parpopulate(slwest382_codechallenge.SpikeTriggeredAverage);
 
 %% Create & run compute table that computes spike-triggered average across different queries?
 % Not sure yet if this needs its own table separate from the one above, or
