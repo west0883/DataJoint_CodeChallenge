@@ -190,6 +190,8 @@ insert(slwest382_codechallenge.Sample, holder);
 
 %% Create table of neurons
 % Neurons depend on the session, sample id, but not the stimulations. 
+% Originally had this before the "Stimulation" section, but moved it so I
+% could include a concatenation of the stim ids. 
 
 % Create table
 slwest382_codechallenge.Neuron
@@ -250,6 +252,7 @@ end
 for i = 1:numel(sessions)
     
     % For each stimulation
+    
     for stimi = 1:numel(sessions(i).stimulations)
 
         % Assign fields.
@@ -261,6 +264,7 @@ for i = 1:numel(sessions)
         % Concatenate with holding structure.
         holding_structure = [holding_structure; temp_structure]; 
     end
+
 end
 
 % Remove the empty first entry of holding_structure
@@ -268,7 +272,8 @@ holding_structure = holding_structure(2:end);
 
 % Find unique entries. Convert it to a table and back because eveything in
 % Matlab is hard.
-holding_structure_unique = table2struct(unique(struct2table(holding_structure), 'stable'));
+[holding_structure_unique, rows, ~] = unique(struct2table(holding_structure), 'rows', 'stable');
+holding_structure_unique = table2struct(holding_structure_unique);
 
 % Add the stimulation id to structure;
 for stimi = 1: numel(holding_structure_unique)
@@ -281,4 +286,31 @@ insert(slwest382_codechallenge.Stimulation, holding_structure_unique);
 %% Create a recordings table.
 % Dependent on neuron, stimulation type. Will have other, non-primary key
 % attributes. 
+% Looking for ways to not have to repeatedly loop through things...not finding it. 
+
+% Create table
+slwest382_codechallenge.Recording
+
+% Go back and put the stimulation flag back with the neurons. 
+for i = 1:numel(sessions)   
+    for ii = 1:numel(sessions(i).stimulations)
+        
+        % Get stim fields
+        stim_height = sessions(i).stimulations(ii).stim_height;
+        x_block_size = sessions(i).stimulations(ii).x_block_size;
+        y_block_size = sessions(i).stimulations(ii).y_block_size;
+
+        % For each potential stim id, 
+        for iii = 1:numel(holding_structure_unique)
+            % Get stim fields
+            stim_stim_height = holding_structure_unique(iii).stim_height;
+            stim_x_block_size = holding_structure_unique(iii).x_block_size;
+            stim_y_block_size = holding_structure_unique(iii).y_block_size;
+
+            if isequal([stim_height, x_block_size, y_block_size], [stim_stim_height, stim_x_block_size, stim_y_block_size])
+                sessions(i).stimulations(ii).stimulation_id = iii;
+            end
+        end 
+    end 
+end
 
