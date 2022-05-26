@@ -76,7 +76,9 @@ end
 
 %%  Make cell array. 
 % Subject, session date, sample number, stimulation [id, onset,
-% frames,movie], neuron [id, firing times]; 
+% frames,movie], neuron [id, firing times], also fps and pixel size (they 
+% don't seem to change, but chould in theory; they are dependent on each 
+% recording).
 
 % Grab all iterations with code I've written previously.
 loop_list.iterators = {'session', {'[1:size(loop_variables.sessions,2)]'}, 'session_iterator';
@@ -87,7 +89,8 @@ loop_variables.sessions = sessions;
 [looping_output_list, ~] = LoopGenerator(loop_list, loop_variables);
 
 
-data_titles = {'subject', 'date', 'sample', 'stimulation id', 'onset', 'frames', 'movie', 'neuron id', 'firing times'};
+data_titles = {'subject', 'date', 'sample', 'stimulation id', 'onset', ...
+    'frames', 'movie', 'neuron id', 'firing times', 'fps', 'pixel size'};
 data = cell(numel(looping_output_list), numel(data_titles));
 
 % For each item in looping_output_list, 
@@ -126,6 +129,13 @@ for itemi = 1:size(looping_output_list,1)
 
         % Spike times
         data{itemi, 9} = sessions(session).stimulations(stimulation).spikes{neuron};
+
+        % Frames per second.
+        data{itemi, 10} = sessions(session).stimulations(stimulation).fps;
+
+        % Pixel size.
+        data{itemi, 11} = sessions(session).stimulations(stimulation).pixel_size;
+
     end 
 end 
 
@@ -191,6 +201,7 @@ slwest382_codechallenge.Sample
 % Create table
 slwest382_codechallenge.Stimulation
 
+% Place from unique stimulation types calculated above.
 holder = num2cell([[1:5]' all_stimulations_unique]);
 
 % Insert 
@@ -212,20 +223,20 @@ for i =  1:size(data,1)
     end
 end
 holder(empty_indices, :) = [];
-%Sample numbers don't repeat, but for completeness I'll make sure
-% everything's unique. 
+
+% Remove repeats
 holder = table2cell(unique(cell2table(holder)));
 
 % Insert 
 insert(slwest382_codechallenge.Neuron, holder);
 slwest382_codechallenge.Neuron
 
-%% Create table of recordings
+%% Create table of Recordings
 % Dependent on neuron, stimulations
 slwest382_codechallenge.Recording
 
 %Grab sample ID numbers from sessions structure, as above.
-holder = data(:, [1:3 8 4:7 9]);
+holder = data(:, [1:3 8 4:7 9:11]);
 
 %Remove any empty entries. (Have to do with a for loop because of the way cells work) 
 empty_indices = [];
@@ -238,6 +249,8 @@ holder(empty_indices, :) = [];
 
 % Don't need to look for unique entries here.
 
-% Insert 
+% Insert.
+% This tends to take a long time, to the point I was afraid I'd crashed
+% Matlab. 
 insert(slwest382_codechallenge.Recording, holder);
 slwest382_codechallenge.Recording
